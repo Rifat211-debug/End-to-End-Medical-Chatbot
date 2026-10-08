@@ -60,6 +60,10 @@ jobs:
         run: |
           docker stop medical-chatbot || true
           docker rm medical-chatbot || true
+      - name: Cleanup Disk Space
+        run: |
+          docker system prune -a --volumes -f
+          df -h
 
       - name: Pull latest Docker image
         run: |
