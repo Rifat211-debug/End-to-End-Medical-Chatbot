@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>MediCare AI</title>
+
+<!-- Google Font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+>
+
+<!-- Font Awesome -->
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
+
+<!-- Custom CSS -->
+<link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+
+
+</head>
+
+<body>
+
+<div class="app-container">
+
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar">
+
+    <div class="brand">
+        <div class="brand-icon">
+            <i class="fa-solid fa-heart-pulse"></i>
+        </div>
+
+        <div>
+            <h2>MediCare AI</h2>
+            <span>Medical Assistant</span>
+        </div>
+    </div>
+
+    <div class="sidebar-card">
+        <div class="sidebar-card-icon">
+            <i class="fa-solid fa-shield-heart"></i>
+        </div>
+
+        <h3>AI-Powered Guidance</h3>
+
+        <p>
+            Get helpful medical information powered by AI.
+        </p>
+    </div>
+
+    <div class="sidebar-info">
+        <div class="info-item">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Evidence-based responses</span>
+        </div>
+
+        <div class="info-item">
+            <i class="fa-solid fa-lock"></i>
+            <span>Private conversation</span>
+        </div>
+
+        <div class="info-item">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Fast AI responses</span>
+        </div>
+    </div>
+
+    <div class="sidebar-bottom">
+        <div class="disclaimer">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+
+            <p>
+                This AI provides general information and is not a
+                substitute for professional medical advice.
+            </p>
+        </div>
+    </div>
+
+</aside>
+
+
+<!-- ================= MAIN CHAT ================= -->
+<main class="chat-container">
+
+    <!-- CHAT HEADER -->
+    <header class="chat-header">
+
+        <div class="doctor-profile">
+
+            <div class="doctor-avatar">
+                <span>👩‍⚕️</span>
+                <div class="online-dot"></div>
+            </div>
+
+            <div class="doctor-info">
+                <h1>Medical Assistant</h1>
+
+                <div class="status">
+                    <span class="status-dot"></span>
+                    <span>Online & ready to help</span>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- THEME TOGGLE -->
+        <button
+            type="button"
+            class="theme-toggle"
+            id="themeToggle"
+            aria-label="Toggle theme"
+            title="Toggle dark/light theme"
+        >
+            <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+
+    </header>
+
+
+    <!-- ================= CHAT BODY ================= -->
+    <section class="chat-body" id="chatBody">
+
+        <!-- WELCOME -->
+        <div class="welcome-section">
+
+            <div class="welcome-icon">
+                🩺
+            </div>
+
+            <h2>
+                Smarter Guidance.
+                <span>Better Health.</span>
+            </h2>
+
+            <p>
+                Ask me about symptoms, medical conditions,
+                medications, or general health information.
+            </p>
+
+        </div>
+
+
+        <!-- INITIAL BOT MESSAGE -->
+        <div class="message-row bot-row">
+
+            <div class="message-avatar">
+                👩‍⚕️
+            </div>
+
+            <div class="message-content">
+
+                <div class="message-name">
+                    Medical Assistant
+                </div>
+
+                <div class="message-bubble bot-message">
+                    Hello! 👋 I'm your AI medical assistant.
+                    How can I help you today?
+                </div>
+
+                <div class="message-time">
+                    Just now
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= TYPING INDICATOR ================= -->
+    <div
+        class="typing-container"
+        id="typingIndicator"
+        style="display: none;"
+    >
+        <div class="message-avatar">
+            👩‍⚕️
+        </div>
+
+        <div class="typing-bubble">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+
+    <!-- ================= INPUT AREA ================= -->
+    <footer class="input-section">
+
+        <form id="chatForm" class="chat-form">
+
+            <textarea
+                id="messageInput"
+                name="msg"
+                rows="1"
+                placeholder="Type your medical question..."
+                autocomplete="off"
+                required
+            ></textarea>
+
+            <button
+                type="submit"
+                id="sendButton"
+                class="send-button"
+                aria-label="Send message"
+                title="Send message"
+            >
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+
+        </form>
+
+        <div class="input-footer">
+            <span>
+                <i class="fa-solid fa-lock"></i>
+                Your conversation is private
+            </span>
+
+            <span>
+                Enter to send • Shift + Enter for new line
+            </span>
+        </div>
+
+    </footer>
+
+</main>
+
+
+</div>
+
+<!-- jQuery -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const chatForm = document.getElementById("chatForm");
+    const messageInput = document.getElementById("messageInput");
+    const chatBody = document.getElementById("chatBody");
+    const typingIndicator = document.getElementById("typingIndicator");
+    const sendButton = document.getElementById("sendButton");
+
+    const themeToggle = document.getElementById("themeToggle");
+    const themeIcon = document.getElementById("themeIcon");
+
+
+    /* =========================================
+       THEME
+    ========================================= */
+
+    const savedTheme = localStorage.getItem("medicalChatTheme");
+
+    if (savedTheme === "dark") {
+        document.body.classList.add("dark-theme");
+        themeIcon.classList.remove("fa-moon");
+        themeIcon.classList.add("fa-sun");
+    }
+
+
+    themeToggle.addEventListener("click", function () {
+
+        document.body.classList.toggle("dark-theme");
+
+        const isDark =
+            document.body.classList.contains("dark-theme");
+
+        if (isDark) {
+
+            themeIcon.classList.remove("fa-moon");
+            themeIcon.classList.add("fa-sun");
+
+            localStorage.setItem(
+                "medicalChatTheme",
+                "dark"
+            );
+
+        } else {
+
+            themeIcon.classList.remove("fa-sun");
+            themeIcon.classList.add("fa-moon");
+
+            localStorage.setItem(
+                "medicalChatTheme",
+                "light"
+            );
+        }
+    });
+
+
+    /* =========================================
+       ADD MESSAGE
+    ========================================= */
+
+    function addMessage(message, sender) {
+
+        const row = document.createElement("div");
+
+        row.classList.add(
+            "message-row",
+            sender === "user" ? "user-row" : "bot-row"
+        );
+
+
+        const avatar = document.createElement("div");
+
+        avatar.classList.add("message-avatar");
+
+        avatar.textContent =
+            sender === "user" ? "👤" : "👩‍⚕️";
+
+
+        const content = document.createElement("div");
+
+        content.classList.add("message-content");
+
+
+        const name = document.createElement("div");
+
+        name.classList.add("message-name");
+
+        name.textContent =
+            sender === "user"
+                ? "You"
+                : "Medical Assistant";
+
+
+        const bubble = document.createElement("div");
+
+        bubble.classList.add(
+            "message-bubble",
+            sender === "user"
+                ? "user-message"
+                : "bot-message"
+        );
+
+        /*
+         * textContent prevents HTML/JavaScript
+         * from being injected into the chat.
+         */
+        bubble.textContent = message;
+
+
+        const time = document.createElement("div");
+
+        time.classList.add("message-time");
+
+        time.textContent = "Just now";
+
+
+        content.appendChild(name);
+        content.appendChild(bubble);
+        content.appendChild(time);
+
+
+        row.appendChild(avatar);
+        row.appendChild(content);
+
+
+        chatBody.appendChild(row);
+
+        scrollToBottom();
+    }
+
+
+    /* =========================================
+       SCROLL
+    ========================================= */
+
+    function scrollToBottom() {
+
+        chatBody.scrollTo({
+            top: chatBody.scrollHeight,
+            behavior: "smooth"
+        });
+    }
+
+
+    /* =========================================
+       TYPING INDICATOR
+    ========================================= */
+
+    function showTyping() {
+        typingIndicator.style.display = "flex";
+        scrollToBottom();
+    }
+
+
+    function hideTyping() {
+        typingIndicator.style.display = "none";
+    }
+
+
+    /* =========================================
+       AUTO RESIZE TEXTAREA
+    ========================================= */
+
+    messageInput.addEventListener("input", function () {
+
+        this.style.height = "auto";
+
+        this.style.height =
+            Math.min(this.scrollHeight, 140) + "px";
+    });
+
+
+    /* =========================================
+       ENTER TO SEND
+    ========================================= */
+
+    messageInput.addEventListener("keydown", function (event) {
+
+        if (
+            event.key === "Enter" &&
+            !event.shiftKey
+        ) {
+
+            event.preventDefault();
+
+            chatForm.requestSubmit();
+        }
+    });
+
+
+    /* =========================================
+       SEND MESSAGE
+    ========================================= */
+
+    chatForm.addEventListener("submit", function (event) {
+
+        event.preventDefault();
+
+        const message = messageInput.value.trim();
+
+        if (!message) {
+            return;
+        }
+
+
+        // Show user's message immediately
+        addMessage(message, "user");
+
+
+        // Clear input
+        messageInput.value = "";
+
+        messageInput.style.height = "auto";
+
+
+        // Disable input while waiting
+        messageInput.disabled = true;
+        sendButton.disabled = true;
+
+
+        showTyping();
+
+
+        /*
+         * IMPORTANT:
+         *
+         * FastAPI endpoint:
+         *
+         * POST /chat
+         *
+         * Form field:
+         *
+         * msg
+         */
+        $.ajax({
+
+            url: "/chat",
+
+            type: "POST",
+
+            data: {
+                msg: message
+            },
+
+            success: function (response) {
+
+                hideTyping();
+
+                addMessage(
+                    response,
+                    "bot"
+                );
+            },
+
+            error: function (xhr) {
+
+                hideTyping();
+
+                let errorMessage =
+                    "Sorry, something went wrong. Please try again.";
+
+                if (xhr.responseText) {
+                    console.error(
+                        "Chat API error:",
+                        xhr.responseText
+                    );
+                }
+
+                addMessage(
+                    errorMessage,
+                    "bot"
+                );
+            },
+
+            complete: function () {
+
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+
+                messageInput.focus();
+            }
+        });
+
+    });
+
+
+    // Focus input when page loads
+    messageInput.focus();
+
+});
+</script>
+
+</body>
+</html>
